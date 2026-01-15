@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePage({
-  name: 'home',
+  name: 'check-in',
   layout: 'tabbar',
   style: {
     navigationBarTitleText: '首页',
