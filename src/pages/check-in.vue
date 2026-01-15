@@ -7,130 +7,110 @@ definePage({
   },
 })
 
-const router = useRouter()
-const {
-  theme,
-  toggleTheme,
-  currentThemeColor,
-  showThemeColorSheet,
-  themeColorOptions,
-  openThemeColorPicker,
-  closeThemeColorPicker,
-  selectThemeColor,
-  setFollowSystem,
-} = useManualTheme()
+const { time } = useClock()
 
-const isDark = computed({
-  get() {
-    return theme.value === 'dark'
-  },
-  set() {
-    toggleTheme()
-  },
-})
+const progress = ref(0)
 
-// 页面跳转方法
-function navigateTo(name: string) {
-  router.push({
-    name,
-  })
-}
-
-// 处理主题色选择
-function handleThemeColorSelect(option: any) {
-  selectThemeColor(option)
-}
-
-function openUrl(url: string) {
-  window.open(url, '_blank')
+function nextStep() {
+  progress.value = progress.value + 1
+  if (progress.value > 2) {
+    progress.value = 0
+  }
 }
 </script>
 
 <template>
-  <view class="box-border py-3">
-    <view class="mx-3 box-border rounded-3 bg-white px-4 py-6 text-center dark:bg-[var(--wot-dark-background2)]">
-      <text class="mb-3 block text-left text-5 text-gray-800 font-bold dark:text-gray-200">
-        Wot Starter
-      </text>
-      <text class="mb-3 block text-left text-30rpx text-gray-600 leading-relaxed dark:text-gray-300">
-        ⚡️ 基于 vitesse-uni-app 由 vite & uni-app 驱动的、深度整合 Wot UI 组件库的快速启动模板
-      </text>
-      <text class="block text-left text-3 text-gray-400 leading-relaxed dark:text-gray-400">
-        背靠 Uni Helper、Wot UI 团队，告别 HBuilderX ，拥抱现代前端开发工具链
-      </text>
-    </view>
+  <div class="box-border wf bg-#F6F7F9 px1.75">
+    <div class="my2.5 box-border wf flex b-rd-2.5 bg-#fff p3">
+      <WImage custom-class="size-12.25! overflow-hidden! b-rd-1.25! flex-shrink-0!" src="https://dummyimage.com/600x400/000/fff" />
 
-    <demo-block title="基础设置" transparent>
-      <wd-cell-group border custom-class="rounded-2! overflow-hidden">
-        <wd-cell title="暗黑模式">
-          <wd-switch v-model="isDark" size="18px" />
-        </wd-cell>
-        <wd-cell title="跟随系统">
-          <wd-button size="small" @click="setFollowSystem">
-            跟随系统
-          </wd-button>
-        </wd-cell>
-        <wd-cell title="选择主题色" is-link @click="openThemeColorPicker">
-          <view class="flex items-center justify-end gap-2">
-            <view
-              class="h-4 w-4 rounded-full"
-              :style="{ backgroundColor: currentThemeColor.primary }"
-            />
-            <text>{{ currentThemeColor.name }}</text>
-          </view>
-        </wd-cell>
-      </wd-cell-group>
-    </demo-block>
+      <div class="box-border min-w-0 flex-1 pl3">
+        <div class="line-clamp-1 text-(3.75 #121F28)">
+          李建华
+        </div>
+        <div class="line-clamp-1 text-(3.75 #7E8389)">
+          四川省小蜜蜂家政服务有限公司
+        </div>
+      </div>
+    </div>
 
-    <demo-block title="工具链介绍" transparent>
-      <wd-cell-group border custom-class="rounded-2! overflow-hidden">
-        <wd-cell title="🧩 WotUI组件库" is-link @click="openUrl('https://wot-ui.cn/')" />
+    <div class="box-border wf b-rd-2.5 bg-#fff p3">
+      <wd-steps vertical :active="progress">
+        <wd-step>
+          <template #title>
+            <div class="text-(3.5 #7E8389)">
+              签到时间 09:00
+            </div>
+          </template>
+          <template #description>
+            <div class="wf">
+              <template v-if="progress > 0">
+                <div class="text-(3.75 #121F28)">
+                  打卡时间 08:59
+                </div>
+                <div class="mb3.25 mt2.75 text-3.25">
+                  <i class="i-carbon:location-filled text-#03B754" />
+                  <span class="ml1.25 text-#7E8389">鄞州区楼花路288号雅居乐花园12号楼2单元</span>
+                </div>
 
-        <wd-cell title="🚦 Router 路由管理" is-link @click="navigateTo('router')" />
-        <wd-cell title="🌐 Alova 网络请求" is-link @click="navigateTo('request')" />
-        <wd-cell title="🎨 Icon 图标" is-link @click="navigateTo('icon')" />
-        <wd-cell title="✨ Unocss 原子化" is-link @click="navigateTo('styles')" />
-        <wd-cell title="🍍 Pinia 持久化" is-link @click="navigateTo('pinia')" />
-        <wd-cell title="💬 Fedback 反馈组件" is-link @click="navigateTo('feedback')" />
-        <wd-cell title="🌱 CreateUni 脚手架" is-link @click="navigateTo('create-uni') " />
-        <wd-cell title="🔄 CI/CD 持续集成" is-link @click="navigateTo('ci')" />
-        <wd-cell title="🦾  uni-ku/root" is-link @click="navigateTo('root')" />
-        <wd-cell title="📊 uni-echarts" is-link @click="navigateTo('echarts')" />
-      </wd-cell-group>
-    </demo-block>
+                <div class="mb10 box-border w-fit b-rd-0.25 px1.25 py0.25 text-3.25" :style="{ backgroundColor: '#E6F1FF', color: '#056CFF' }">
+                  正常
+                </div>
+              </template>
+              <template v-else>
+                <div class="mb20 text-(3.75 #121F28)">
+                  未打卡
+                </div>
+              </template>
+            </div>
+          </template>
+        </wd-step>
+        <wd-step>
+          <template #title>
+            <div class="text-(3.5 #7E8389)">
+              签退时间 18:00
+            </div>
+          </template>
+          <template #description>
+            <div class="wf">
+              <template v-if="progress > 1">
+                <div class="text-(3.75 #121F28)">
+                  打卡时间 08:59
+                </div>
+                <div class="mb3.25 mt2.75 text-3.25">
+                  <i class="i-carbon:location-filled text-#03B754" />
+                  <span class="ml1.25 text-#7E8389">鄞州区楼花路288号雅居乐花园12号楼2单元</span>
+                </div>
 
-    <!-- 主题色选择 ActionSheet -->
-    <wd-action-sheet
-      v-model="showThemeColorSheet"
-      title="选择主题色"
-      :close-on-click-action="true"
-      @cancel="closeThemeColorPicker"
-    >
-      <view class="px-4 pb-4">
-        <view
-          v-for="option in themeColorOptions"
-          :key="option.value"
-          class="flex items-center justify-between border-b border-gray-100 py-3 last:border-b-0 dark:border-gray-700"
-          @click="handleThemeColorSelect(option)"
-        >
-          <view class="flex items-center gap-3">
-            <view
-              class="h-6 w-6 border-2 border-gray-200 rounded-full dark:border-gray-600"
-              :style="{ backgroundColor: option.primary }"
-            />
-            <text class="text-4 text-gray-800 dark:text-gray-200">
-              {{ option.name }}
-            </text>
-          </view>
-          <wd-icon
-            v-if="currentThemeColor.value === option.value"
-            name="check"
-            :color="option.primary"
-            size="20px"
-          />
-        </view>
-      </view>
-      <wd-gap :height="50" />
-    </wd-action-sheet>
-  </view>
+                <div class="box-border w-fit b-rd-0.25 px1.25 py0.25 text-3.25" :style="{ backgroundColor: '#E6F1FF', color: '#056CFF' }">
+                  正常
+                </div>
+              </template>
+              <template v-else>
+                <div class="text-(3.75 #121F28)">
+                  未打卡
+                </div>
+              </template>
+            </div>
+          </template>
+        </wd-step>
+      </wd-steps>
+
+      <div class="wf f-c-c flex-col">
+        <div class="size-34.5 f-c-c flex-col b-rd-full bg-red text-#fff" @click="nextStep">
+          <div class="text-5 fw500">
+            上班打卡
+          </div>
+          <div class="text-4 text-#fff opacity-50">
+            {{ time }}
+          </div>
+        </div>
+
+        <div class="mb3.25 mt2.75 mt7 box-border flex px8 text-3.25">
+          <i class="i-carbon:location-filled text-(4.5 #03B754)" />
+          <span class="ml1.25 text-#7E8389">已进入考勤范围：鄞州区楼花路288号雅居乐花园 12号楼2单元1503室</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
