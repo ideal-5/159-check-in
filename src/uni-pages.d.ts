@@ -5,6 +5,7 @@
 
 type _LocationUrl =
   "/pages/index/index" |
+  "/pages/login" |
   "/pages/about/index";
 
 interface NavigateToOptions {
