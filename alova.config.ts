@@ -1,84 +1,62 @@
-/* eslint-disable no-irregular-whitespace */
-
 import type { Config } from '@alova/wormhole'
 
-// For more config detailed visit:
-// https://alova.js.org/tutorial/getting-started/extension-integration
-
 export default <Config>{
+  // 接口生成器配置（可以配置多个）
   generator: [
     {
-      /**
-       * file input. support:
-       * 1. openapi json file url
-       * 2. local file
-       */
-      input: 'https://petstore3.swagger.io/api/v3/openapi.json',
-      /**
-       * input file platform. Currently only swagger is supported.
-       * When this parameter is specified, the input field only needs to specify the document address without specifying the openapi file
-       */
+      // 接口文档来源
+      // 支持在线 OpenAPI / Swagger 地址 或 本地 json 文件
+      // input: 'https://petstore3.swagger.io/api/v3/openapi.json',
+      input: 'http://127.0.0.1:4523/export/openapi/5?version=3.0',
+
+      // 接口文档平台类型（目前仅支持 swagger / openapi）
       platform: 'swagger',
 
-      /**
-       * output path of interface file and type file.
-       * Multiple generators cannot have the same address, otherwise the generated code will overwrite each other.
-       */
+      // 接口方法与类型定义的输出目录
+      // ⚠️ 多个 generator 不能使用相同的输出路径
       output: 'src/api',
 
-      /**
-       * the mediaType of the generated response data. default is `application/json`
-       */
+      // 接口响应数据的媒体类型（一般为 application/json）
       responseMediaType: 'application/json',
 
-      /**
-       * the bodyMediaType of the generated request body data. default is `application/json`
-       */
+      // 请求体（POST / PUT 等）的媒体类型
       bodyMediaType: 'application/json',
 
-      /**
-       * the generated api version. options are `2` or `3`, default is `auto`.
-       */
+      // OpenAPI 版本
+      // 2 = Swagger 2.0
+      // 3 = OpenAPI 3.x
+      // auto = 自动识别（默认）
       version: 3,
 
-      /**
-       * type of generated code. The options ​​are `auto/ts/typescript/module/commonjs`.
-       */
+      // 生成代码的类型
+      // 可选值：auto / ts / typescript / module / commonjs
       type: 'typescript',
 
-      /**
-       * exported global api name, you can access the generated api globally through this name, default is `Apis`.
-       * it is required when multiple generators are configured, and it cannot be repeated
-       */
+      // 生成的全局 API 对象名称
+      // 通过该对象可以访问所有生成的接口方法
+      // ⚠️ 多个 generator 时必须配置，且名称不能重复
       global: 'Apis',
 
-      /**
-       * filter or convert the generated api information, return an apiDescriptor, if this function is not specified, the apiDescripor object is not converted
-       */
+      // 接口生成前的处理函数
+      // 可在此过滤、修改、增强接口定义
       handleApi: (apiDescriptor) => {
-        // Skip logging to console
-        // console.log(apiDescriptor)
-
-        // Filter out any deprecated APIs if needed
+        // 如果接口被标记为废弃，则不生成
         if (apiDescriptor.deprecated) {
-          return undefined // Skip this API
+          return undefined
         }
-        // You can transform the API descriptor here if needed
-        // For example, add custom headers, modify parameters, etc.
 
+        // 返回处理后的接口描述对象
         return apiDescriptor
       },
     },
   ],
 
-  /**
-   * extension only
-   * whether to automatically update the interface, enabled by default, check every 5 minutes, closed when set to `false`
-   */
+  // 自动更新接口配置（仅对 VSCode 插件生效）
   autoUpdate: {
-    // Update when editor is launched
+    // 打开编辑器时自动检查接口更新
     launchEditor: true,
-    // Check for updates every 5 minutes
+
+    // 每隔 5 分钟检查一次接口是否发生变化
     interval: 5 * 60 * 1000,
   },
 }

@@ -6,32 +6,55 @@ definePage({
   },
 })
 
+const userStore = useUserStore()
+const { token } = storeToRefs(userStore)
+
+const router = useRouter()
+
 const model = reactive<{
   value1: string
   value2: string
 }>({
-  value1: '',
-  value2: '',
+  value1: 'zhbgs',
+  value2: '123456',
 })
 const form = ref()
 
-function handleSubmit() {
+const { loading, send } = useRequest(
+  Apis.general.post_api_user_login,
+  { immediate: false, cacheFor: 0 },
+)
+
+const toast = useToast()
+async function handleSubmit() {
   if (!form.value) {
     return
   }
-  form.value
-    .validate()
-    .then(({ valid }: { valid: boolean }) => {
-      if (valid) {
-        // 登录
-      }
-    })
+
+  const { valid } = await form.value.validate()
+  if (!valid) {
+    return
+  }
+
+  try {
+    const { code, data, msg } = await send({ data: { account: model.value1, password: model.value2 } })
+    if (code !== 1) {
+      toast.error(msg)
+      return
+    }
+    toast.success(msg)
+    token.value = data.userinfo.token
+    router.pushTab({ name: 'check-in' })
+  }
+  catch (err) {
+    console.error('接口请求失败', err)
+  }
 }
 </script>
 
 <template>
-  <div class="wf h100vh flex flex-col">
-    <div class="wf f-c-c bg-primary h81.5 flex-shrink-0">
+  <div class="h100vh wf flex flex-col">
+    <div class="h81.5 wf f-c-c flex-shrink-0 bg-primary">
       <div class="size-26.5 b-rd-3.25 bg-#D8D8D8">
         <image
           src=""
@@ -41,10 +64,10 @@ function handleSubmit() {
       </div>
     </div>
 
-    <div class="wf min-h-0 flex-1 b-rd-t-5 bg-#fff -mt12">
+    <div class="min-h-0 wf flex-1 b-rd-t-5 bg-#fff -mt12">
       <wd-form ref="form" :model="model" custom-class="size-full">
-        <div class="wf mb9.75 box-border px5">
-          <div class="wf f-c mb3.75 mt20 h12.5">
+        <div class="mb9.75 box-border wf px5">
+          <div class="mb3.75 mt20 h12.5 wf f-c">
             <wd-input
               v-model="model.value1"
               style="--wot-input-bg:#F2F8FF"
@@ -56,15 +79,12 @@ function handleSubmit() {
               :rules="[{ required: true, message: '请填写账号' }]"
             >
               <template #prefix>
-                <image
-                  src=""
-                  class="size-4.5 bg-red"
-                />
+                <span class="i-carbon:tablet size-4.5 text-#1B2441" />
               </template>
             </wd-input>
           </div>
 
-          <div class="wf f-c h12.5 b-rd-1.75">
+          <div class="h12.5 wf f-c b-rd-1.75">
             <wd-input
               v-model="model.value2"
               style="--wot-input-bg:#F2F8FF"
@@ -76,16 +96,14 @@ function handleSubmit() {
               :rules="[{ required: true, message: '请填写密码' }]"
             >
               <template #prefix>
-                <image
-                  src=""
-                  class="size-4.5 bg-red"
-                />
+                <span class="i-carbon:locked size-4.5 text-#1B2441" />
               </template>
             </wd-input>
           </div>
         </div>
         <div class="mb21 box-border px3.75">
           <wd-button
+            :loading
             :custom-class="`wf! h11! b-rd-1.5! text-4! fw500! ${(!model.value1 || !model.value2) && 'is-disabled'}`"
             type="primary"
             block

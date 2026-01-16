@@ -11,6 +11,11 @@ export const alovaInstance = createAlova({
   }),
   statesHook: vueHook,
   beforeRequest: (method) => {
+    const userStore = useUserStore()
+    const { token } = storeToRefs(userStore)
+    if (token.value) {
+      method.config.headers.token = `${token.value}`
+    }
     // Add content type for POST/PUT/PATCH requests
     if (['POST', 'PUT', 'PATCH'].includes(method.type)) {
       method.config.headers['Content-Type'] = 'application/json'
