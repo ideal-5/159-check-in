@@ -35,7 +35,10 @@
       "path": "pages/mine",
       "type": "page",
       "name": "mine",
-      "layout": "tabbar"
+      "layout": "tabbar",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
     },
     {
       "path": "pages/statistics",
