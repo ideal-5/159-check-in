@@ -21,7 +21,8 @@ function nextStep() {
 
 <template>
   <div class="box-border wf bg-#F6F7F9 px1.75">
-    <div class="my2.5 box-border wf flex b-rd-2.5 bg-#fff p3">
+    <div class="h2.5 wf" />
+    <div class="mb2.5 box-border wf flex b-rd-2.5 bg-#fff p3">
       <WImage custom-class="size-12.25! overflow-hidden! b-rd-1.25! flex-shrink-0!" src="https://dummyimage.com/600x400/000/fff" />
 
       <div class="box-border min-w-0 flex-1 pl3">

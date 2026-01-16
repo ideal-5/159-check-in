@@ -3,139 +3,179 @@ definePage({
   name: 'statistics',
   layout: 'tabbar',
   style: {
-    navigationBarTitleText: '关于',
+    navigationBarTitleText: '统计',
   },
 })
 
-// 核心团队成员
-const coreTeam = [
-  {
-    name: '不如摸鱼去',
-    avatar: 'https://avatars.githubusercontent.com/u/26426873?v=4',
-    role: '前端打工仔',
-    desc: '负责WotUI组件库的开发和维护',
-    github: 'https://github.com/Moonofweisheng',
-  },
-  {
-    name: '二狗',
-    avatar: 'https://avatars.githubusercontent.com/u/50100966?v=4',
-    role: '灵活就业大师',
-    desc: '问题毁灭者，总能迅速解决各种技术难题',
-    github: 'https://github.com/810505339',
-  },
-  {
-    name: 'RJQingHuan',
-    avatar: 'https://avatars.githubusercontent.com/u/53939074?v=4',
-    role: 'Pull Shark',
-    desc: '热衷参与开源组件建设',
-    github: 'https://github.com/RJQingHuan',
-  },
-  {
-    name: 'skiyee',
-    avatar: 'https://avatars.githubusercontent.com/u/120664167?v=4',
-    role: 'uni-ku 的创立者，重金雇佣兵',
-    desc: '精通 JS 和 TS 的全能攻城狮',
-    github: 'https://github.com/skiyee',
-  },
-  {
-    name: 'jasper-ops',
-    avatar: 'https://avatars.githubusercontent.com/u/85024227?v=4',
-    role: '新技术狂热分子',
-    desc: '始终走在技术前沿，热衷于探索最新的开发趋势',
-    github: 'https://github.com/jasper-ops',
-  },
-]
+const { calc, WEEKS, formatDate } = useMonthCalendar()
 
-function openUrl(url: string) {
-  window.open(url, '_blank')
+// 当前年月
+const now = new Date()
+const activeYearMonth = ref<[number, number]>([
+  now.getFullYear(),
+  now.getMonth() + 1, // ⚠️ JS 月份是 0-11
+])
+
+// 当前选中的日期 默认今天
+const activeDay = ref(formatDate(now.getFullYear(), now.getMonth() + 1, now.getDate()))
+
+//  月份切换
+function addMonth(delta: number) {
+  let [y, m] = activeYearMonth.value
+  m += delta
+
+  while (m > 12) {
+    m -= 12
+    y++
+  }
+  while (m < 1) {
+    m += 12
+    y--
+  }
+  activeYearMonth.value = [y, m]
 }
 
-// 打开公众号二维码
-function openWeChat() {
-  uni.previewImage({
-    urls: ['https://wot-ui.cn/wechatPublicAccount.png'],
-  })
+function monthChange({ detail: { value }}: { detail: { value: string } }) {
+  const [year, month] = value.split('-').map(Number)
+  activeYearMonth.value = [Number(year), Number(month)]
 }
 
-// 打开捐赠二维码
-function donate() {
-  uni.previewImage({
-    urls: ['https://wot-ui.cn/weixinQrcode.jpg'],
-  })
+type Day = ReturnType<typeof calc>[number]
+const days = ref<Day[]>([])
+
+watch(() => activeYearMonth.value, () => {
+  days.value = calc(...activeYearMonth.value)
+  console.log('days.value', days.value)
+}, { immediate: true })
+
+function tapDay(day: Day) {
+  uni.vibrateShort({ type: 'light' })
+  activeDay.value = day.date
 }
+
+const progress = ref(0)
 </script>
 
 <template>
-  <view class="min-h-screen bg-gray-100 py-3 dark:bg-[var(--wot-dark-background)]">
-    <!-- 头部介绍 -->
-    <view class="mx-3 mb-3 flex flex-col gap-2">
-      <text class="text-6 text-gray-800 font-bold dark:text-[var(--wot-dark-color)]">
-        关于我们
-      </text>
-      <text class="text-3.5 text-gray-600 leading-snug dark:text-[var(--wot-dark-color2)]">
-        我是不如摸鱼去，一个前端打工仔，我和我的小伙伴们正在致力于开发轻量、高效的uni-app组件库和高效、易用的uni-app快速开发模板。
-      </text>
-    </view>
-
-    <!-- 核心团队 -->
-    <demo-block title="核心团队" transparent>
-      <view class="grid grid-cols-2 gap-3">
-        <view
-          v-for="member in coreTeam"
-          :key="member.name"
-          class="rounded-2 bg-white p-4 text-center dark:bg-[var(--wot-dark-background2)]"
-          @click="openUrl(member.github)"
+  <div class="bg-#F6F7F9">
+    <div class="h2.5 wf" />
+    <!-- 日历视图 -->
+    <div class="h-fit bg-#fff">
+      <div class="box-border wf f-c-c py2 text-(3.75 #121F28)">
+        <div class="box-border px2.5" @click="addMonth(-1)">
+          <i class="i-carbon:chevron-left" />
+        </div>
+        <picker
+          bindchange="bindPickerChange"
+          :value="`${activeYearMonth[0]}-${String(activeYearMonth[1]).padStart(2, '0')}`"
+          mode="date"
+          fields="month"
+          @change="monthChange"
         >
-          <image
-            :src="member.avatar"
-            class="mx-auto mb-2 h-16 w-16 border-2 border-blue-200 rounded-full dark:border-blue-800"
-          />
-          <view class="mb-1 text-3.5 text-gray-800 font-bold dark:text-[var(--wot-dark-color)]">
-            {{ member.name }}
-          </view>
-          <view class="mb-2 text-2.5 text-blue-600 dark:text-blue-400">
-            {{ member.role }}
-          </view>
-          <view class="text-2.5 text-gray-600 leading-snug dark:text-[var(--wot-dark-color2)]">
-            {{ member.desc }}
-          </view>
-        </view>
-      </view>
-    </demo-block>
+          <div class="text-(3.75 #121F28) fw600">
+            {{ `${activeYearMonth[0]}年${activeYearMonth[1]}月` }}
+          </div>
+        </picker>
+        <div class="box-border px2.5" @click="addMonth(1)">
+          <i class="i-carbon:chevron-right" />
+        </div>
+      </div>
 
-    <!-- 关于 uni-helper -->
-    <demo-block title="关于 uni-helper 团队" transparent>
-      <view class="rounded-3 bg-white p-5 dark:bg-[var(--wot-dark-background2)]">
-        <text class="mb-3 block text-3.5 text-gray-600 leading-relaxed dark:text-[var(--wot-dark-color2)]">
-          <text class="text-blue-600" @click="openUrl('https://uni-helper.cn/')">
-            uni-helper
-          </text>
-          是一个旨在增强 uni-app 系列产品的开发体验为爱发电的非官方组织。作为靠爱发电的非官方项目，uni-helper 提供了打包工具插件支持、编辑器扩展支持、NPM 包等并尽力维护它们。
-        </text>
-        <text class="text-3.5 text-gray-600 leading-relaxed dark:text-[var(--wot-dark-color2)]">
-          在此我们特别向 uni-helper 团队表示感谢，他们为 uni-app 系列产品提供了强大的支持，包括打包工具插件支持、编辑器扩展支持等，这使我们得以站在巨人的巨人的肩膀上完成此项目。
-        </text>
-      </view>
-    </demo-block>
+      <div class="grid grid-cols-7 wf gap-1">
+        <div
+          v-for="week in WEEKS"
+          :key="week"
+          class="box-border wf f-c-c py4 text-(3 #121F28)"
+        >
+          {{ week }}
+        </div>
+        <template
+          v-for="day in days"
+          :key="day.date"
+        >
+          <div class="h-fit wf" @click="tapDay(day)">
+            <div
+              v-if="day.isCurrentMonth"
+              class="box-border wf f-c-c b-rd-full py4 text-3.5"
+              :class="[
+                (day.week === '六' || day.week === '日') && 'text-#888F93',
+                activeDay === day.date && 'bg-#EBF3FF',
+              ]"
+            >
+              <div class="relative">
+                {{ day.day }}
 
-    <!-- 更多信息 -->
-    <demo-block title="更多信息" transparent>
-      <wd-cell-group border custom-class="rounded-2! overflow-hidden">
-        <wd-cell
-          title="关注公众号"
-          title-width="200px"
-          label="uni-app教程、组件库讯息一手掌握！"
-          is-link
-          @click="openWeChat"
-        />
-        <wd-cell
-          title="捐赠"
-          title-width="200px"
-          label="每一份捐赠都是对我们莫大的鼓励！"
-          is-link
-          @click="donate"
-        />
-      </wd-cell-group>
-    </demo-block>
-  </view>
+                <div class="absolute left-50% top-100% size-1 b-rd-full bg-blue -translate-x-50%" />
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class="box-border box-border wf f-c py3.5 text-(3.25 #121F28)">
+        <div class="mx3.5 f-c">
+          <div class="mr2 size-1.5 b-rd-full bg-primary" />
+          <div>正常打卡</div>
+        </div>
+        <div class="f-c">
+          <div class="mr2 size-1.5 b-rd-full bg-#FE1504" />
+          <div>异常打卡</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt2.5 wf bg-#fff">
+      <div class="box-border wf b-b-(1px #F6F7F9 solid) px4 py3.5">
+        <div class="text-(3.75 #121F28)">
+          上下班打卡
+        </div>
+        <div class="text-(3.5 #7E8389)">
+          (工时7小时37分钟)
+        </div>
+      </div>
+
+      <div class="box-border wf p3.5">
+        <wd-steps vertical :active="progress">
+          <wd-step>
+            <template #title>
+              <div class="text-(3.5 #7E8389)">
+                签到时间 09:00
+              </div>
+            </template>
+            <template #description>
+              <div class="wf">
+                <template v-if="progress > 0">
+                  <div class="text-(3.75 #121F28)">
+                    打卡时间 08:59
+                  </div>
+                  <div class="mb10 box-border w-fit b-rd-0.25 px1.25 py0.25 text-3.25" :style="{ backgroundColor: '#E6F1FF', color: '#056CFF' }">
+                    正常
+                  </div>
+                </template>
+              </div>
+            </template>
+          </wd-step>
+          <wd-step>
+            <template #title>
+              <div class="text-(3.5 #7E8389)">
+                签退时间 18:00
+              </div>
+            </template>
+            <template #description>
+              <div class="wf">
+                <template v-if="progress > 1">
+                  <div class="text-(3.75 #121F28)">
+                    打卡时间 08:59
+                  </div>
+                  <div class="box-border w-fit b-rd-0.25 px1.25 py0.25 text-3.25" :style="{ backgroundColor: '#E6F1FF', color: '#056CFF' }">
+                    正常
+                  </div>
+                </template>
+              </div>
+            </template>
+          </wd-step>
+        </wd-steps>
+      </div>
+    </div>
+  </div>
 </template>

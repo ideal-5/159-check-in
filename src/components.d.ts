@@ -13,8 +13,6 @@ declare module 'vue' {
     GlobalToast: typeof import('./components/GlobalToast.vue')['default']
     PrivacyPopup: typeof import('./components/PrivacyPopup.vue')['default']
     WdButton: typeof import('wot-design-uni/components/wd-button/wd-button.vue')['default']
-    WdCell: typeof import('wot-design-uni/components/wd-cell/wd-cell.vue')['default']
-    WdCellGroup: typeof import('wot-design-uni/components/wd-cell-group/wd-cell-group.vue')['default']
     WdConfigProvider: typeof import('wot-design-uni/components/wd-config-provider/wd-config-provider.vue')['default']
     WdForm: typeof import('wot-design-uni/components/wd-form/wd-form.vue')['default']
     WdGap: typeof import('wot-design-uni/components/wd-gap/wd-gap.vue')['default']

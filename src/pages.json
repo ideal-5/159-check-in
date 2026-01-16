@@ -43,7 +43,7 @@
       "name": "statistics",
       "layout": "tabbar",
       "style": {
-        "navigationBarTitleText": "关于"
+        "navigationBarTitleText": "统计"
       }
     }
   ],
