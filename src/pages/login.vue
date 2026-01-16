@@ -15,8 +15,8 @@ const model = reactive<{
   value1: string
   value2: string
 }>({
-  value1: 'zhbgs',
-  value2: '123456',
+  value1: '',
+  value2: '',
 })
 const form = ref()
 
@@ -103,7 +103,7 @@ async function handleSubmit() {
         </div>
         <div class="mb21 box-border px3.75">
           <wd-button
-            :loading
+            :loading="loading"
             :custom-class="`wf! h11! b-rd-1.5! text-4! fw500! ${(!model.value1 || !model.value2) && 'is-disabled'}`"
             type="primary"
             block
