@@ -21,7 +21,7 @@ const model = reactive<{
 const form = ref()
 
 const { loading, send } = useRequest(
-  Apis.general.post_api_user_login,
+  (data: Parameters<typeof Apis.general.post_api_user_login>[0]) => Apis.general.post_api_user_login(data),
   { immediate: false, cacheFor: 0 },
 )
 

@@ -186,9 +186,19 @@ declare global {
       /**
        * ---
        *
-       * [GET] 签到（开发中）
+       * [POST] 打卡首页
        *
        * **path:** /api/attendance/index
+       *
+       * ---
+       *
+       * **RequestBody**
+       * ```ts
+       * type RequestBody = {
+       *   lng?: string
+       *   lat?: string
+       * }
+       * ```
        *
        * ---
        *
@@ -197,9 +207,182 @@ declare global {
        * type Response = object
        * ```
        */
-      get_api_attendance_index<Config extends Alova2MethodConfig<object>>(
-        config?: Config
-      ): Alova2Method<object, 'general.get_api_attendance_index', Config>;
+      post_api_attendance_index<
+        Config extends Alova2MethodConfig<object> & {
+          data: {
+            lng?: string;
+            lat?: string;
+          };
+        }
+      >(
+        config: Config
+      ): Alova2Method<object, 'general.post_api_attendance_index', Config>;
+      /**
+       * ---
+       *
+       * [POST] 打卡
+       *
+       * **path:** /api/attendance/clock
+       *
+       * ---
+       *
+       * **RequestBody**
+       * ```ts
+       * type RequestBody = {
+       *   // 打卡经度
+       *   lng?: string
+       *   // 打卡纬度
+       *   lat?: string
+       *   // 打卡地点
+       *   location?: string
+       *   // 是否外出打卡 0=否，1=是
+       *   is_outing?: string
+       *   // 外出原因
+       *   outing_reason?: string
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = object
+       * ```
+       */
+      post_api_attendance_clock<
+        Config extends Alova2MethodConfig<object> & {
+          data: {
+            /**
+             * 打卡经度
+             */
+            lng?: string;
+            /**
+             * 打卡纬度
+             */
+            lat?: string;
+            /**
+             * 打卡地点
+             */
+            location?: string;
+            /**
+             * 是否外出打卡 0=否，1=是
+             */
+            is_outing?: string;
+            /**
+             * 外出原因
+             */
+            outing_reason?: string;
+          };
+        }
+      >(
+        config: Config
+      ): Alova2Method<object, 'general.post_api_attendance_clock', Config>;
+      /**
+       * ---
+       *
+       * [GET] 考勤统计
+       *
+       * **path:** /api/attendance/monthlyStats
+       *
+       * ---
+       *
+       * **Query Parameters**
+       * ```ts
+       * type QueryParameters = {
+       *   year?: string
+       *   month?: string
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = {
+       *   code: number
+       *   msg: string
+       *   time: string
+       *   data: {
+       *     year: number
+       *     month: number
+       *     // [items] start
+       *     // [items] end
+       *     calendar: Array<{
+       *       date: string
+       *       day: number
+       *       status: string
+       *       clock_in: string
+       *       clock_out: string
+       *       work_hours: number
+       *       in_status: string
+       *       out_status: string
+       *     }>
+       *     total_work_hours: number
+       *     normal_days: number
+       *     abnormal_days: number
+       *     total_days: string
+       *   }
+       * }
+       * ```
+       */
+      get_api_attendance_monthlystats<
+        Config extends Alova2MethodConfig<{
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            year: number;
+            month: number;
+            calendar: Array<{
+              date: string;
+              day: number;
+              status: string;
+              clock_in: string;
+              clock_out: string;
+              work_hours: number;
+              in_status: string;
+              out_status: string;
+            }>;
+            total_work_hours: number;
+            normal_days: number;
+            abnormal_days: number;
+            total_days: string;
+          };
+        }> & {
+          params: {
+            year?: string;
+            month?: string;
+          };
+        }
+      >(
+        config: Config
+      ): Alova2Method<
+        {
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            year: number;
+            month: number;
+            calendar: Array<{
+              date: string;
+              day: number;
+              status: string;
+              clock_in: string;
+              clock_out: string;
+              work_hours: number;
+              in_status: string;
+              out_status: string;
+            }>;
+            total_work_hours: number;
+            normal_days: number;
+            abnormal_days: number;
+            total_days: string;
+          };
+        },
+        'general.get_api_attendance_monthlystats',
+        Config
+      >;
     };
     user: {
       /**
@@ -213,9 +396,7 @@ declare global {
        *
        * **RequestBody**
        * ```ts
-       * type RequestBody = {
-       *   aaa: number
-       * }
+       * type RequestBody = object
        * ```
        *
        * ---
@@ -227,9 +408,7 @@ declare global {
        */
       get_test_user<
         Config extends Alova2MethodConfig<object> & {
-          data: {
-            aaa: number;
-          };
+          data: object;
         }
       >(
         config: Config

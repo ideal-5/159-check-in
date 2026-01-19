@@ -7,7 +7,7 @@ export default <Config>{
       // 接口文档来源
       // 支持在线 OpenAPI / Swagger 地址 或 本地 json 文件
       // input: 'https://petstore3.swagger.io/api/v3/openapi.json',
-      input: 'http://127.0.0.1:4523/export/openapi/5?version=3.0',
+      input: 'http://127.0.0.1:4523/export/openapi/2?version=3.0',
 
       // 接口文档平台类型（目前仅支持 swagger / openapi）
       platform: 'swagger',
