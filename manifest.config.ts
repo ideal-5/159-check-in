@@ -71,6 +71,20 @@ export default defineManifestConfig({
     usingComponents: true,
     darkmode: true,
     themeLocation: 'theme.json',
+    permission: {
+      'scope.userLocation': {
+        desc: '小程序将使用定位功能',
+      },
+    },
+    requiredPrivateInfos: [
+      'chooseAddress',
+      'chooseLocation',
+      'choosePoi',
+      'getLocation',
+      'onLocationChange',
+      'startLocationUpdateBackground',
+      'startLocationUpdate',
+    ],
   },
   'app-harmony': {},
   'mp-harmony': {},

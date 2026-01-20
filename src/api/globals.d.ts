@@ -204,11 +204,67 @@ declare global {
        *
        * **Response**
        * ```ts
-       * type Response = object
+       * type Response = {
+       *   code: number
+       *   msg: string
+       *   time: string
+       *   data: {
+       *     name: string
+       *     avatar: string
+       *     department: string
+       *     work_start: string
+       *     work_end: string
+       *     clock_in: {
+       *       time: string
+       *       location: string
+       *       outing: boolean
+       *       status: string
+       *     }
+       *     clock_out: {
+       *       time: string
+       *       location: string
+       *       outing: boolean
+       *       status: string
+       *     }
+       *     is_in_range: boolean
+       *     location_name: string
+       *     can_clock_in: boolean
+       *     can_clock_out: boolean
+       *     can_clock: string
+       *   }
+       * }
        * ```
        */
       post_api_attendance_index<
-        Config extends Alova2MethodConfig<object> & {
+        Config extends Alova2MethodConfig<{
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            name: string;
+            avatar: string;
+            department: string;
+            work_start: string;
+            work_end: string;
+            clock_in: {
+              time: string;
+              location: string;
+              outing: boolean;
+              status: string;
+            };
+            clock_out: {
+              time: string;
+              location: string;
+              outing: boolean;
+              status: string;
+            };
+            is_in_range: boolean;
+            location_name: string;
+            can_clock_in: boolean;
+            can_clock_out: boolean;
+            can_clock: string;
+          };
+        }> & {
           data: {
             lng?: string;
             lat?: string;
@@ -216,7 +272,39 @@ declare global {
         }
       >(
         config: Config
-      ): Alova2Method<object, 'general.post_api_attendance_index', Config>;
+      ): Alova2Method<
+        {
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            name: string;
+            avatar: string;
+            department: string;
+            work_start: string;
+            work_end: string;
+            clock_in: {
+              time: string;
+              location: string;
+              outing: boolean;
+              status: string;
+            };
+            clock_out: {
+              time: string;
+              location: string;
+              outing: boolean;
+              status: string;
+            };
+            is_in_range: boolean;
+            location_name: string;
+            can_clock_in: boolean;
+            can_clock_out: boolean;
+            can_clock: string;
+          };
+        },
+        'general.post_api_attendance_index',
+        Config
+      >;
       /**
        * ---
        *
