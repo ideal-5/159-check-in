@@ -134,4 +134,7 @@ async function handleSubmit() {
     height: 100%;
   }
 }
+:deep(.wd-input__icon) {
+  background-color: transparent !important;
+}
 </style>
