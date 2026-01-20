@@ -8,6 +8,7 @@ export default uni(
       'eslint-comments/no-unlimited-disable': 'off',
     },
     ignores: [
+      'src/common/**',
       'src/uni_modules/**/*',
       'docs/.vitepress/dist',
       'docs/.vitepress/cache',

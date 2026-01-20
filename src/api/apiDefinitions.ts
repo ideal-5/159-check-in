@@ -20,5 +20,6 @@ export default {
   'general.post_api_attendance_index': ['POST', '/api/attendance/index'],
   'user.get_test_user': ['GET', '/test/user'],
   'general.post_api_attendance_clock': ['POST', '/api/attendance/clock'],
-  'general.get_api_attendance_monthlystats': ['GET', '/api/attendance/monthlyStats']
+  'general.get_api_attendance_monthlystats': ['GET', '/api/attendance/monthlyStats'],
+  'general.get_api_attendance_userinfo': ['GET', '/api/attendance/userInfo']
 };

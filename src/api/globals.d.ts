@@ -195,8 +195,8 @@ declare global {
        * **RequestBody**
        * ```ts
        * type RequestBody = {
-       *   lng?: string
-       *   lat?: string
+       *   lng?: number
+       *   lat?: number
        * }
        * ```
        *
@@ -266,8 +266,8 @@ declare global {
           };
         }> & {
           data: {
-            lng?: string;
-            lat?: string;
+            lng?: number;
+            lat?: number;
           };
         }
       >(
@@ -318,9 +318,9 @@ declare global {
        * ```ts
        * type RequestBody = {
        *   // 打卡经度
-       *   lng?: string
+       *   lng?: number
        *   // 打卡纬度
-       *   lat?: string
+       *   lat?: number
        *   // 打卡地点
        *   location?: string
        *   // 是否外出打卡 0=否，1=是
@@ -334,20 +334,44 @@ declare global {
        *
        * **Response**
        * ```ts
-       * type Response = object
+       * type Response = {
+       *   code: number
+       *   msg: string
+       *   time: string
+       *   data: {
+       *     hrm_attendance_main_id: number
+       *     flow_id: string
+       *     clock_type: string
+       *     clock_time: string
+       *     distance: number
+       *     status: string
+       *   }
+       * }
        * ```
        */
       post_api_attendance_clock<
-        Config extends Alova2MethodConfig<object> & {
+        Config extends Alova2MethodConfig<{
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            hrm_attendance_main_id: number;
+            flow_id: string;
+            clock_type: string;
+            clock_time: string;
+            distance: number;
+            status: string;
+          };
+        }> & {
           data: {
             /**
              * 打卡经度
              */
-            lng?: string;
+            lng?: number;
             /**
              * 打卡纬度
              */
-            lat?: string;
+            lat?: number;
             /**
              * 打卡地点
              */
@@ -364,7 +388,23 @@ declare global {
         }
       >(
         config: Config
-      ): Alova2Method<object, 'general.post_api_attendance_clock', Config>;
+      ): Alova2Method<
+        {
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            hrm_attendance_main_id: number;
+            flow_id: string;
+            clock_type: string;
+            clock_time: string;
+            distance: number;
+            status: string;
+          };
+        },
+        'general.post_api_attendance_clock',
+        Config
+      >;
       /**
        * ---
        *
@@ -469,6 +509,71 @@ declare global {
           };
         },
         'general.get_api_attendance_monthlystats',
+        Config
+      >;
+      /**
+       * ---
+       *
+       * [GET] 用户信息
+       *
+       * **path:** /api/attendance/userInfo
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = {
+       *   code: number
+       *   msg: string
+       *   time: string
+       *   data: {
+       *     id: number
+       *     nickname: string
+       *     avatar: string
+       *     mobile: string
+       *     birthday: string
+       *     age: number
+       *     company: string
+       *     department: string
+       *   }
+       * }
+       * ```
+       */
+      get_api_attendance_userinfo<
+        Config extends Alova2MethodConfig<{
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            id: number;
+            nickname: string;
+            avatar: string;
+            mobile: string;
+            birthday: string;
+            age: number;
+            company: string;
+            department: string;
+          };
+        }>
+      >(
+        config?: Config
+      ): Alova2Method<
+        {
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            id: number;
+            nickname: string;
+            avatar: string;
+            mobile: string;
+            birthday: string;
+            age: number;
+            company: string;
+            department: string;
+          };
+        },
+        'general.get_api_attendance_userinfo',
         Config
       >;
     };

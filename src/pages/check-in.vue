@@ -4,21 +4,11 @@ definePage({
   layout: 'tabbar',
   style: {
     navigationBarTitleText: '首页',
+    enablePullDownRefresh: true,
   },
 })
 
-const { time } = useClock()
-
-const progress = ref(99)
-
 type CheckInInfoParams = Parameters<typeof Apis.general.post_api_attendance_index>[0]
-
-const { send } = useRequest(
-  (data: CheckInInfoParams) => Apis.general.post_api_attendance_index(data),
-  { immediate: false, cacheFor: 0 },
-)
-
-const checkInInfo = ref<Awaited<ReturnType<typeof Apis.general.post_api_attendance_index>>['data']>()
 
 /**
  * not=还没打卡 normal=正常,late=迟到,early_leave=早退,absent=缺卡
@@ -39,14 +29,57 @@ interface CheckInData {
   location_name: string
 }
 
+type CheckInParams = Parameters<typeof Apis.general.post_api_attendance_clock>[0]
+
+const { time } = useClock()
+const toast = useToast()
+const { reverseGeocoder } = useQQMap()
+
+const { send } = useRequest(
+  (data: CheckInInfoParams) => Apis.general.post_api_attendance_index(data),
+  { immediate: false, cacheFor: 0 },
+)
+
+const { loading: checkInLoading, send: checkInSend } = useRequest(
+  (data: CheckInParams) => Apis.general.post_api_attendance_clock(data),
+  { immediate: false, cacheFor: 0 },
+)
+
+const progress = ref(99)
+
+const checkInInfo = ref<Awaited<ReturnType<typeof Apis.general.post_api_attendance_index>>['data']>()
+
 const checkInData = ref<CheckInData>()
 
+const locationDate = ref<{ location: { latitude: number, longitude: number }, address: string }>()
+let getLocationDateTimer: ReturnType<typeof setInterval> | null = null
+async function getLocationDate() {
+  try {
+    const { latitude, longitude } = await uni.getLocation({ type: 'gcj02' })
+    const { result: { formatted_addresses: { standard_address } } } = await reverseGeocoder({ latitude, longitude })
+    locationDate.value = {
+      location: {
+        latitude,
+        longitude,
+      },
+      address: standard_address,
+    }
+    console.log('locationDate.value*************', locationDate.value)
+  }
+  catch {
+    toast.warning('获取位置信息失败')
+    if (getLocationDateTimer) {
+      clearTimeout(getLocationDateTimer)
+    }
+    throw new Error('获取位置信息失败')
+  }
+}
+
 async function getCheckInData() {
-  const { latitude, longitude } = await uni.getLocation({ type: 'wgs84' })
-  const { data } = await send({ data: { lng: longitude.toString(), lat: latitude.toString() } })
+  const { data } = await send({ data: { lng: locationDate.value?.location?.longitude, lat: locationDate.value?.location.latitude } })
   checkInInfo.value = {
     ...data,
-    is_in_range: false, // 是否进如考勤范围
+    // is_in_range: true, // 是否进如考勤范围
   }
 
   checkInData.value = {
@@ -143,23 +176,48 @@ async function getCheckInData() {
   }
 }
 
-onLoad(async () => {
-  getCheckInData()
+onShow(async () => {
+  if (getLocationDateTimer) {
+    clearInterval(getLocationDateTimer)
+  }
+  await getLocationDate()
+  await getCheckInData()
+
+  getLocationDateTimer = setInterval(async () => {
+    await getLocationDate()
+    await getCheckInData()
+  }, 60 * 1000)
 })
 
-// type CheckInParams = Parameters<typeof Apis.general.post_api_attendance_clock>[0]
+onHide(() => {
+  if (getLocationDateTimer) {
+    clearInterval(getLocationDateTimer)
+    getLocationDateTimer = null
+  }
+})
 
-// const { loading: checkInLoading, send: checkInSend } = useRequest(
-//   (data: CheckInParams) => Apis.general.post_api_attendance_clock(data),
-//   { immediate: false, cacheFor: 0 },
-// )
-// function checkIn() {
-//   // progress.value = progress.value + 1
-//   // if (progress.value > 2) {
-//   //   progress.value = 0
-//   // }
-//   // checkInSend()
-// }
+onPullDownRefresh(async () => {
+  await getLocationDate()
+  await getCheckInData()
+  uni.stopPullDownRefresh()
+})
+
+async function checkIn() {
+  if (!locationDate.value) {
+    toast.warning('获取位置信息失败')
+    return
+  }
+  const { address, location: { latitude, longitude } } = locationDate.value
+  const { code, msg } = await checkInSend({ data: {
+    lng: longitude,
+    lat: latitude,
+    location: address,
+  } })
+  toast[code === 1 ? 'success' : 'error'](msg)
+  if (code === 1) {
+    getCheckInData()
+  }
+}
 </script>
 
 <template>
@@ -210,19 +268,39 @@ onLoad(async () => {
       </wd-steps>
 
       <div class="wf f-c-c flex-col">
-        <div class="size-34.5 f-c-c flex-col b-rd-full bg-red text-#fff">
+        <wd-button
+          v-if="checkInInfo && checkInInfo?.is_in_range"
+          custom-class="size-34.5! f-c-c! flex-col! b-rd-full! bg-[linear-gradient(180deg,#04A5FD_0%,#0569FF_100%)]! text-#fff!"
+          :loading="checkInLoading"
+          @click="checkIn"
+        >
           <div class="text-5 fw500">
             上班打卡
           </div>
           <div class="text-4 text-#fff opacity-50">
             {{ time }}
           </div>
-        </div>
+        </wd-button>
+
+        <wd-button
+          v-if="checkInInfo && !checkInInfo?.is_in_range"
+          custom-class="size-34.5! f-c-c! flex-col! b-rd-full! bg-#5BC68F! text-#fff!"
+        >
+          <div class="text-5 fw500">
+            外出打卡
+          </div>
+          <div class="text-4 text-#fff opacity-50">
+            {{ time }}
+          </div>
+        </wd-button>
 
         <div class="mb3.25 mt2.75 mt7 box-border f-c px8 text-3.25">
-          <i class="i-carbon:location-filled text-(4.5)" :class="[checkInInfo?.is_in_range ? 'text-#03B754' : 'text-#EECC52']" />
-          <span v-if="!checkInInfo?.is_in_range" class="ml1.25 text-#EECC52">未进入考勤范围</span>
-          <span v-else class="ml1.25 text-#7E8389">已进入考勤范围：{{ checkInInfo?.location_name }}</span>
+          <!-- :class="[checkInInfo?.is_in_range ? 'text-#03B754' : 'text-#EECC52']" -->
+          <i class="i-carbon:location-filled text-(4.5 #03B754)" />
+          <p class="ml1.25 ml1.25 text-#7E8389">
+            <span v-if="checkInInfo?.is_in_range">已进入考勤范围：</span>
+            <span>{{ checkInInfo?.is_in_range ? checkInInfo?.location_name : locationDate?.address }}</span>
+          </p>
         </div>
       </div>
     </div>
