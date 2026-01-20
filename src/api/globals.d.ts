@@ -576,6 +576,121 @@ declare global {
         'general.get_api_attendance_userinfo',
         Config
       >;
+      /**
+       * ---
+       *
+       * [POST] 编辑个人信息
+       *
+       * **path:** /api/attendance/editUser
+       *
+       * ---
+       *
+       * **RequestBody**
+       * ```ts
+       * type RequestBody = {
+       *   // 头像
+       *   avatar?: string
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = {
+       *   code: number
+       *   msg: string
+       *   time: string
+       *   data: null
+       * }
+       * ```
+       */
+      post_api_attendance_edituser<
+        Config extends Alova2MethodConfig<{
+          code: number;
+          msg: string;
+          time: string;
+          data: null;
+        }> & {
+          data: {
+            /**
+             * 头像
+             */
+            avatar?: string;
+          };
+        }
+      >(
+        config: Config
+      ): Alova2Method<
+        {
+          code: number;
+          msg: string;
+          time: string;
+          data: null;
+        },
+        'general.post_api_attendance_edituser',
+        Config
+      >;
+      /**
+       * ---
+       *
+       * [POST] 上传图片
+       *
+       * **path:** /api/common/upload
+       *
+       * ---
+       *
+       * **RequestBody**
+       * ```ts
+       * type RequestBody = {
+       *   file?: Blob
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = {
+       *   code: number
+       *   msg: string
+       *   time: string
+       *   data: {
+       *     url: string
+       *     fullurl: string
+       *   }
+       * }
+       * ```
+       */
+      post_api_common_upload<
+        Config extends Alova2MethodConfig<{
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            url: string;
+            fullurl: string;
+          };
+        }> & {
+          data: {
+            file?: Blob;
+          };
+        }
+      >(
+        config: Config
+      ): Alova2Method<
+        {
+          code: number;
+          msg: string;
+          time: string;
+          data: {
+            url: string;
+            fullurl: string;
+          };
+        },
+        'general.post_api_common_upload',
+        Config
+      >;
     };
     user: {
       /**

@@ -12,9 +12,15 @@ export const useUserStore = defineStore('user', () => {
     user.value = data
   }
 
+  const logout = async () => {
+    token.value = ''
+    user.value = undefined
+  }
+
   return {
     token,
     user,
     getUserInfo,
+    logout,
   }
 })
