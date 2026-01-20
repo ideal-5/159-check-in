@@ -7,6 +7,12 @@ definePage({
   },
 })
 
+type Monthlystats = Awaited<ReturnType<typeof Apis.general.get_api_attendance_monthlystats>>['data']
+const { send } = useRequest(
+  (year: string, month: string) => Apis.general.get_api_attendance_monthlystats({ params: { year, month } }),
+  { immediate: false, cacheFor: 0 },
+)
+
 const { calc, WEEKS, formatDate } = useMonthCalendar()
 
 // 当前年月
@@ -17,7 +23,7 @@ const activeYearMonth = ref<[number, number]>([
 ])
 
 // 当前选中的日期 默认今天
-const activeDay = ref(formatDate(now.getFullYear(), now.getMonth() + 1, now.getDate()))
+const activeDate = ref(formatDate(now.getFullYear(), now.getMonth() + 1, now.getDate()))
 
 //  月份切换
 function addMonth(delta: number) {
@@ -40,20 +46,40 @@ function monthChange({ detail: { value }}: { detail: { value: string } }) {
   activeYearMonth.value = [Number(year), Number(month)]
 }
 
-type Day = ReturnType<typeof calc>[number]
+type Day = ReturnType<typeof calc>[number] & {
+  status?: string
+  res?: Monthlystats['calendar'][number]
+}
 const days = ref<Day[]>([])
 
+const activeDay = computed(() => days.value.find(i => i.date === activeDate.value))
+
 watch(() => activeYearMonth.value, () => {
-  days.value = calc(...activeYearMonth.value)
-  console.log('days.value', days.value)
+  getMonthlyStats()
 }, { immediate: true })
 
 function tapDay(day: Day) {
   uni.vibrateShort({ type: 'light' })
-  activeDay.value = day.date
+  activeDate.value = day.date
 }
 
 const progress = ref(0)
+
+async function getMonthlyStats() {
+  const [year, month] = activeYearMonth.value
+  days.value = calc(year, month)
+
+  const { data } = await send(String(year), String(month))
+
+  const currentMonthDays = days.value.filter(d => d.isCurrentMonth)
+
+  data.calendar.forEach((item, i) => {
+    if (currentMonthDays[i]) {
+      currentMonthDays[i].status = item.status
+      currentMonthDays[i].res = item
+    }
+  })
+}
 </script>
 
 <template>
@@ -99,13 +125,20 @@ const progress = ref(0)
               class="box-border wf f-c-c b-rd-full py4 text-3.5"
               :class="[
                 (day.week === '六' || day.week === '日') && 'text-#888F93',
-                activeDay === day.date && 'bg-#EBF3FF',
+                activeDate === day.date && 'bg-#EBF3FF',
               ]"
             >
               <div class="relative">
                 {{ day.day }}
 
-                <div class="absolute left-50% top-100% size-1 b-rd-full bg-blue -translate-x-50%" />
+                <div
+                  class="absolute left-50% top-100% size-1 b-rd-full -translate-x-50%"
+                  :class="[
+                    day?.status === 'normal' && 'bg-#0468FE',
+                    day?.status === 'abnormal' && 'bg-#FE1504',
+                    day?.status === 'none' && 'bg-t',
+                  ]"
+                />
               </div>
             </div>
           </div>
@@ -129,8 +162,8 @@ const progress = ref(0)
         <div class="text-(3.75 #121F28)">
           上下班打卡
         </div>
-        <div class="text-(3.5 #7E8389)">
-          (工时7小时37分钟)
+        <div v-if="activeDay?.res?.work_hours" class="text-(3.5 #7E8389)">
+          (工时{{ activeDay?.res?.work_hours }}小时)
         </div>
       </div>
 
@@ -139,10 +172,10 @@ const progress = ref(0)
           <wd-step>
             <template #title>
               <div class="text-(3.5 #7E8389)">
-                签到时间 09:00
+                签到时间 {{ activeDay?.res?.clock_in }}
               </div>
             </template>
-            <template #description>
+            <!-- <template #description>
               <div class="wf">
                 <template v-if="progress > 0">
                   <div class="text-(3.75 #121F28)">
@@ -153,15 +186,15 @@ const progress = ref(0)
                   </div>
                 </template>
               </div>
-            </template>
+            </template> -->
           </wd-step>
           <wd-step>
             <template #title>
               <div class="text-(3.5 #7E8389)">
-                签退时间 18:00
+                签退时间 {{ activeDay?.res?.clock_out }}
               </div>
             </template>
-            <template #description>
+            <!-- <template #description>
               <div class="wf">
                 <template v-if="progress > 1">
                   <div class="text-(3.75 #121F28)">
@@ -172,7 +205,7 @@ const progress = ref(0)
                   </div>
                 </template>
               </div>
-            </template>
+            </template> -->
           </wd-step>
         </wd-steps>
       </div>
