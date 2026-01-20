@@ -25,6 +25,7 @@ declare module 'vue' {
     WdSteps: typeof import('wot-design-uni/components/wd-steps/wd-steps.vue')['default']
     WdTabbar: typeof import('wot-design-uni/components/wd-tabbar/wd-tabbar.vue')['default']
     WdTabbarItem: typeof import('wot-design-uni/components/wd-tabbar-item/wd-tabbar-item.vue')['default']
+    WdTextarea: typeof import('wot-design-uni/components/wd-textarea/wd-textarea.vue')['default']
     WdToast: typeof import('wot-design-uni/components/wd-toast/wd-toast.vue')['default']
     WImage: typeof import('./components/WImage.vue')['default']
   }

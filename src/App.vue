@@ -1,5 +1,8 @@
 <script setup lang="ts">
-onLaunch(() => {})
+const userStore = useUserStore()
+onLaunch(() => {
+  userStore.getUserInfo()
+})
 </script>
 
 <style lang="scss">

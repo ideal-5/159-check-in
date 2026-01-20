@@ -5,6 +5,7 @@
 
 type _LocationUrl =
   "/pages/check-in" |
+  "/pages/go-out-check-in" |
   "/pages/login" |
   "/pages/mine" |
   "/pages/statistics";

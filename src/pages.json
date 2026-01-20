@@ -35,6 +35,15 @@
       }
     },
     {
+      "path": "pages/go-out-check-in",
+      "type": "page",
+      "name": "go-out-check-in",
+      "style": {
+        "navigationBarTitleText": "外勤打卡",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
       "path": "pages/login",
       "type": "page",
       "name": "login",

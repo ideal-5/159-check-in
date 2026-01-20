@@ -3,7 +3,7 @@ definePage({
   name: 'check-in',
   layout: 'tabbar',
   style: {
-    navigationBarTitleText: '首页',
+    navigationBarTitleText: '打卡',
     enablePullDownRefresh: true,
   },
 })
@@ -34,6 +34,9 @@ type CheckInParams = Parameters<typeof Apis.general.post_api_attendance_clock>[0
 const { time } = useClock()
 const toast = useToast()
 const { reverseGeocoder } = useQQMap()
+const router = useRouter()
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const { send } = useRequest(
   (data: CheckInInfoParams) => Apis.general.post_api_attendance_index(data),
@@ -64,7 +67,6 @@ async function getLocationDate() {
       },
       address: standard_address,
     }
-    console.log('locationDate.value*************', locationDate.value)
   }
   catch {
     toast.warning('获取位置信息失败')
@@ -224,14 +226,16 @@ async function checkIn() {
   <div class="box-border wf bg-#F6F7F9 px1.75">
     <div class="h2.5 wf" />
     <div class="mb2.5 box-border wf flex b-rd-2.5 bg-#fff p3">
-      <WImage custom-class="size-12.25! overflow-hidden! b-rd-1.25! flex-shrink-0!" src="https://dummyimage.com/600x400/000/fff" />
-
+      <WImage
+        custom-class="size-12.25! overflow-hidden! b-rd-1.25! flex-shrink-0!"
+        :src="user?.avatar"
+      />
       <div class="box-border min-w-0 flex-1 pl3">
         <div class="line-clamp-1 text-(3.75 #121F28)">
-          李建华
+          {{ user?.nickname }}
         </div>
         <div class="line-clamp-1 text-(3.75 #7E8389)">
-          四川省小蜜蜂家政服务有限公司
+          {{ user?.company }}
         </div>
       </div>
     </div>
@@ -285,6 +289,7 @@ async function checkIn() {
         <wd-button
           v-if="checkInInfo && !checkInInfo?.is_in_range"
           custom-class="size-34.5! f-c-c! flex-col! b-rd-full! bg-#5BC68F! text-#fff!"
+          @click="router.push({ name: 'go-out-check-in' })"
         >
           <div class="text-5 fw500">
             外出打卡
