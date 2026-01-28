@@ -30,7 +30,7 @@
       "name": "check-in",
       "layout": "tabbar",
       "style": {
-        "navigationBarTitleText": "首页",
+        "navigationBarTitleText": "打卡",
         "enablePullDownRefresh": true
       }
     },

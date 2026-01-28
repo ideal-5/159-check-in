@@ -96,11 +96,11 @@ async function getCheckInData() {
           },
           normal: {
             title: `签到时间 ${data.work_start}`,
-            content: `打卡时间 ${data.clock_in.time}`,
-            checkInInfo: data.clock_in.location,
+            content: `打卡时间 ${data.clock_in?.time}`,
+            checkInInfo: data.clock_in?.location,
             tag: [
               { text: '正常', bg: '#E6F1FF', color: '#056CFF' },
-              ...(data.clock_in.outing
+              ...(data.clock_in?.outing
                 ? [{ text: '外出打卡', bg: '#E6F1FF', color: '#056CFF' }]
                 : []),
             ],
@@ -110,7 +110,7 @@ async function getCheckInData() {
             content: '迟到卡',
             tag: [
               { text: '迟到', bg: '#E6F1FF', color: '#056CFF' },
-              ...(data.clock_in.outing
+              ...(data.clock_in?.outing
                 ? [{ text: '外出打卡', bg: '#E6F1FF', color: '#056CFF' }]
                 : []),
             ],
@@ -131,11 +131,11 @@ async function getCheckInData() {
           },
           normal: {
             title: `签到时间 ${data.work_end}`,
-            content: `打卡时间 ${data.clock_out.time}`,
-            checkInInfo: data.clock_out.location,
+            content: `打卡时间 ${data.clock_out?.time}`,
+            checkInInfo: data.clock_out?.location,
             tag: [
               { text: '正常', bg: '#E6F1FF', color: '#056CFF' },
-              ...(data.clock_out.outing
+              ...(data.clock_out?.outing
                 ? [{ text: '外出打卡', bg: '#E6F1FF', color: '#056CFF' }]
                 : []),
             ],
@@ -144,7 +144,7 @@ async function getCheckInData() {
             title: `签到时间 ${data.work_end}`,
             content: '早退',
             tag: [
-              ...(data.clock_out.outing
+              ...(data.clock_out?.outing
                 ? [{ text: '外出打卡', bg: '#E6F1FF', color: '#056CFF' }]
                 : []),
             ],
@@ -163,18 +163,18 @@ async function getCheckInData() {
     return
   }
 
-  if (!data.clock_in || data.clock_in.status === 'absent') {
+  if (!data.clock_in || data.clock_in?.status === 'absent') {
     checkInData.value.dots[0].status = 'not'
   }
   else {
-    checkInData.value.dots[0].status = data.clock_in.status as checkInDotsStatus
+    checkInData.value.dots[0].status = data.clock_in?.status as checkInDotsStatus
   }
 
-  if (!data.clock_out || data.clock_out.status === 'absent') {
+  if (!data.clock_out || data.clock_out?.status === 'absent') {
     checkInData.value.dots[1].status = 'not'
   }
   else {
-    checkInData.value.dots[1].status = data.clock_out.status as checkInDotsStatus
+    checkInData.value.dots[1].status = data.clock_out?.status as checkInDotsStatus
   }
 }
 
