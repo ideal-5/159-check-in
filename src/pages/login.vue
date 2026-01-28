@@ -44,6 +44,7 @@ async function handleSubmit() {
     }
     toast.success(msg)
     token.value = data.userinfo.token
+    userStore.getUserInfo()
     router.pushTab({ name: 'check-in' })
   }
   catch (err) {
