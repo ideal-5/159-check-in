@@ -288,7 +288,7 @@ async function checkIn() {
 
         <wd-button
           v-if="checkInInfo && !checkInInfo?.is_in_range"
-          custom-class="size-34.5! f-c-c! flex-col! b-rd-full! bg-#5BC68F! text-#fff!"
+          custom-class="size-34.5! f-c-c! flex-col! b-rd-full! bg-[linear-gradient(180deg,#04A5FD_0%,#0569FF_100%)]! text-#fff!"
           @click="router.push({ name: 'go-out-check-in' })"
         >
           <div class="text-5 fw500">
